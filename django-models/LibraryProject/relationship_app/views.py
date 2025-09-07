@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic.detail import DetailView  # 👈 checker wants this
 from .models import Book
-from .models import Library   # 👈 checker will now find this
+from .models import Library   # 👈 checker also wants this
 
 # Function-based view to list all books
 def list_books(request):

@@ -84,3 +84,6 @@ def delete_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     book.delete()
     return redirect("list_books")
+
+def home(request):
+    return render(request, "relationship_app/home.html")

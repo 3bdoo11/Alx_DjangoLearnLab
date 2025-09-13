@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from .models import Book, CustomUser
+from .models import Book
+from bookshelf.models import CustomUser
 from django.contrib.auth.forms import UserCreationForm
 
 # --- Basic views ---

@@ -1,66 +1,37 @@
-# from django.contrib import admin
-# from django.contrib.auth.admin import UserAdmin
-# from .models import CustomUser, Book, Library
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser
+from django.utils.html import format_html
 
-# # ===========================
-# # Custom User Admin
-# # ===========================
-# class CustomUserAdmin(UserAdmin):
-#     # الحقول اللي هتظهر في صفحة تفاصيل المستخدم
-#     fieldsets = (
-#         (None, {"fields": ("username", "password")}),
-#         ("Personal info", {"fields": ("first_name", "last_name", "email", "date_of_birth", "profile_photo")}),
-#         (
-#             "Permissions",
-#             {
-#                 "fields": (
-#                     "is_active",
-#                     "is_staff",
-#                     "is_superuser",
-#                     "groups",
-#                     "user_permissions",
-#                 )
-#             },
-#         ),
-#         ("Important dates", {"fields": ("last_login", "date_joined")}),
-#     )
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
 
-#     # الحقول اللي تظهر عند إنشاء مستخدم جديد
-#     add_fieldsets = (
-#         (
-#             None,
-#             {
-#                 "classes": ("wide",),
-#                 "fields": ("username", "email", "date_of_birth", "profile_photo", "password1", "password2"),
-#             },
-#         ),
-#     )
+    # الأعمدة اللي هتظهر
+    list_display = ("username", "email", "first_name", "last_name", "date_of_birth", "profile_photo_preview", "is_staff")
+    list_filter = ("is_staff", "is_superuser", "is_active")
 
-#     list_display = ("username", "email", "first_name", "last_name", "date_of_birth", "is_staff")
-#     search_fields = ("username", "email", "first_name", "last_name")
-#     ordering = ("username",)
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        ("Personal Info", {"fields": ("first_name", "last_name", "email", "date_of_birth", "profile_photo")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Important Dates", {"fields": ("last_login", "date_joined")}),
+    )
 
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("username", "email", "password1", "password2", "date_of_birth", "profile_photo", "is_staff", "is_active"),
+        }),
+    )
 
-# # ===========================
-# # Book Admin
-# # ===========================
-# class BookAdmin(admin.ModelAdmin):
-#     list_display = ("title", "author", "published_date", "isbn", "added_by")
-#     search_fields = ("title", "author", "isbn")
-#     list_filter = ("published_date",)
+    search_fields = ("username", "email")
+    ordering = ("username",)
 
+    # ✅ preview لصورة البروفايل
+    def profile_photo_preview(self, obj):
+        if obj.profile_photo:
+            return format_html('<img src="{}" width="50" height="50" style="border-radius:50%;" />', obj.profile_photo.url)
+        return "No Photo"
+    profile_photo_preview.short_description = "Profile Photo"
 
-# # ===========================
-# # Library Admin
-# # ===========================
-# class LibraryAdmin(admin.ModelAdmin):
-#     list_display = ("name", "location")
-#     search_fields = ("name", "location")
-
-
-# # ===========================
-# # Register models
-# # ===========================
-# admin.site.register(CustomUser, CustomUserAdmin)
-# admin.site.register(Book, BookAdmin)
-# admin.site.register(Library, LibraryAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)

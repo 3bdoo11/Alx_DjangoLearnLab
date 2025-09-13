@@ -130,3 +130,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Only showing the relevant addition/change
 AUTH_USER_MODEL = "relationship_app.CustomUser"
+

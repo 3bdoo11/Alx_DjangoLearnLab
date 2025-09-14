@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.http import require_http_methods
 from .models import Book
-from .forms import BookForm, ExampleForm  # ✅ استيراد كلا النموذجين
-
+from .forms import ExampleForm  
+from .forms import BookForm
 # ========================
 # Book Views with Permissions
 # ========================

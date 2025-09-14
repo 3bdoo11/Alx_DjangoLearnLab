@@ -16,11 +16,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'your-secret-key'
 
-# ========== الوضعية الإنتاجية ==========
+# =========================
+# الوضعية الإنتاجية
+# =========================
 DEBUG = False
 ALLOWED_HOSTS = ['yourdomain.com', 'localhost']
 
-# ========== التطبيقات المثبتة ==========
+# =========================
+# التطبيقات المثبتة
+# =========================
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -32,7 +36,9 @@ INSTALLED_APPS = [
     'csp',  # Content Security Policy Middleware
 ]
 
-# ========== Middleware الأمان ==========
+# =========================
+# Middleware الأمان
+# =========================
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -46,7 +52,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'LibraryProject.urls'
 
-# ========== Templates ==========
+# =========================
+# Templates
+# =========================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -65,7 +73,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
-# ========== Database ==========
+# =========================
+# Database
+# =========================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -73,7 +83,30 @@ DATABASES = {
     }
 }
 
-# ========== إعدادات الأمان ==========
+# =========================
+# إعدادات HTTPS و الأمان
+# =========================
+
+# إعلام Django أنه خلف proxy مع SSL
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# إعادة توجيه كل الطلبات HTTP → HTTPS
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS)
+SECURE_HSTS_SECONDS = 31536000  # سنة واحدة
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# الكوكيز الآمنة (HTTPS + HttpOnly)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# إنهاء الجلسة عند غلق المتصفح
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 # حماية المتصفح من XSS
 SECURE_BROWSER_XSS_FILTER = True
 
@@ -83,24 +116,9 @@ X_FRAME_OPTIONS = 'DENY'
 # منع sniffing للنوع MIME
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# الكوكيز: HTTPS + HttpOnly
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_HTTPONLY = True
-
-# إعادة توجيه كل الطلبات إلى HTTPS
-SECURE_SSL_REDIRECT = True
-
-# HTTP Strict Transport Security
-SECURE_HSTS_SECONDS = 31536000  # سنة واحدة
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-
-# إنهاء الجلسة عند غلق المتصفح
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
-# ========== Content Security Policy ==========
+# =========================
+# Content Security Policy (CSP)
+# =========================
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_SCRIPT_SRC = ("'self'", "https://cdnjs.cloudflare.com")
 CSP_STYLE_SRC = ("'self'", "https://cdnjs.cloudflare.com")
@@ -110,10 +128,14 @@ CSP_CONNECT_SRC = ("'self'",)
 CSP_FRAME_SRC = ("'none'",)
 CSP_MEDIA_SRC = ("'self'",)
 
-# ========== Static files ==========
+# =========================
+# Static files
+# =========================
 STATIC_URL = '/static/'
 
-# ========== Timezone & Localization ==========
+# =========================
+# Timezone & Localization
+# =========================
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True

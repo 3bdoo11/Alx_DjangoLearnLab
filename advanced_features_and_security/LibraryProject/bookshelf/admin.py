@@ -66,3 +66,5 @@ class BookAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return request.user.has_perm("bookshelf.can_delete")
+
+admin.site.register(CustomUser, CustomUserAdmin)

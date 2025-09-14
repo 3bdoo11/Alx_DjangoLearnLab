@@ -6,7 +6,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import user_passes_test
-from .models import Book, Library, Author
+from .models import Library
+from .models import Book
+from .models import Author
 
 
 # Function-based view to list all books

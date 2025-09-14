@@ -1,17 +1,10 @@
 from django.contrib import admin
-from .models import Author, Book, Library, Librarian
+from .models import Author, Library, Librarian  # ✅ شيل Book
 
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ("name",)
     search_fields = ("name",)
-
-
-@admin.register(Book)
-class BookAdmin(admin.ModelAdmin):
-    list_display = ("title", "author", "published_date", "added_by")
-    list_filter = ("published_date", "author")
-    search_fields = ("title",)
 
 
 @admin.register(Library)

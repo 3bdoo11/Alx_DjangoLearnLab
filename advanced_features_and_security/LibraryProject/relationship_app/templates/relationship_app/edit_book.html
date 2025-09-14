@@ -1,30 +1,13 @@
-<!-- bookshelf/templates/bookshelf/edit_book.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Book</title>
-</head>
-<body>
-    <h1>Edit Book: {{ book.title }}</h1>
-
-    <form method="POST" action="">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Changes</button>
-    </form>
-
-    {% if form.errors %}
-    <div style="color:red;">
-        <p>Please correct the errors below:</p>
-        <ul>
-        {% for field in form %}
-            {% for error in field.errors %}
-                <li>{{ field.label }}: {{ error }}</li>
-            {% endfor %}
+<h1>Edit Book</h1>
+<form method="post">
+    {% csrf_token %}
+    <label>Title:</label>
+    <input type="text" name="title" value="{{ book.title }}" required><br>
+    <label>Author:</label>
+    <select name="author">
+        {% for author in authors %}
+        <option value="{{ author.id }}" {% if author.id == book.author.id %}selected{% endif %}>{{ author.name }}</option>
         {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-</body>
-</html>
+    </select><br>
+    <button type="submit">Update Book</button>
+</form>

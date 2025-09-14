@@ -1,0 +1,30 @@
+<!-- bookshelf/templates/bookshelf/edit_book.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Book</title>
+</head>
+<body>
+    <h1>Edit Book: {{ book.title }}</h1>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+
+    {% if form.errors %}
+    <div style="color:red;">
+        <p>Please correct the errors below:</p>
+        <ul>
+        {% for field in form %}
+            {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+            {% endfor %}
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</body>
+</html>

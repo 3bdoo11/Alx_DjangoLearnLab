@@ -1,22 +1,42 @@
-from django.shortcuts import render
-
-# Create your views here.
+from django.views.generic import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from api.models import Book
 from api.serializers import BookSerializer
 
 
-# List all books or create a new one
+# ---------- Django Class-Based Views ----------
+
+class BookCreateView(CreateView):
+    model = Book
+    fields = ['title', 'publication_year', 'author']
+    template_name = 'book_form.html'
+    success_url = reverse_lazy('book-list')
+
+
+class BookUpdateView(UpdateView):
+    model = Book
+    fields = ['title', 'publication_year', 'author']
+    template_name = 'book_form.html'
+    success_url = reverse_lazy('book-list')
+
+
+class BookDeleteView(DeleteView):
+    model = Book
+    template_name = 'book_confirm_delete.html'
+    success_url = reverse_lazy('book-list')
+
+
+# ---------- DRF Views for API ----------
+
 class BookListView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-# Retrieve, update, or delete a book by ID
 class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-# --- IGNORE ---

@@ -1,9 +1,9 @@
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from api.models import Book
 from api.serializers import BookSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 
 # ---------- Django Class-Based Views ----------

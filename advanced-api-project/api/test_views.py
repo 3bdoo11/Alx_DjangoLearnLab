@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth.models import User
-from api.models import Book
+from api.models import Book, Author
 
 
 class BookAPITestCase(APITestCase):
@@ -12,14 +12,19 @@ class BookAPITestCase(APITestCase):
         self.client = APIClient()
         self.client.login(username="testuser", password="testpassword")
 
-        # Create some initial books
-        self.book1 = Book.objects.create(title="Book A", author="Author X", publication_year=2020)
-        self.book2 = Book.objects.create(title="Book B", author="Author Y", publication_year=2021)
+        # Create authors
+        self.author_x = Author.objects.create(name="Author X")
+        self.author_y = Author.objects.create(name="Author Y")
 
-        self.list_url = reverse("book-list")  # Should match your viewset/urls name
+        # Create initial books
+        self.book1 = Book.objects.create(title="Book A", author=self.author_x, publication_year=2020)
+        self.book2 = Book.objects.create(title="Book B", author=self.author_y, publication_year=2021)
+
+        self.list_url = reverse("book-list")
 
     def test_create_book(self):
-        data = {"title": "New Book", "author": "New Author", "publication_year": 2024}
+        author = Author.objects.create(name="New Author")
+        data = {"title": "New Book", "author": author.id, "publication_year": 2024}
         response = self.client.post(self.list_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Book.objects.count(), 3)
@@ -32,7 +37,7 @@ class BookAPITestCase(APITestCase):
 
     def test_update_book(self):
         url = reverse("book-detail", args=[self.book1.id])
-        data = {"title": "Updated Title", "author": "Author X", "publication_year": 2022}
+        data = {"title": "Updated Title", "author": self.author_x.id, "publication_year": 2022}
         response = self.client.put(url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.book1.refresh_from_db()
@@ -45,10 +50,10 @@ class BookAPITestCase(APITestCase):
         self.assertEqual(Book.objects.count(), 1)
 
     def test_filter_books_by_author(self):
-        response = self.client.get(self.list_url + "?author=Author X")
+        response = self.client.get(self.list_url + f"?author={self.author_x.id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["author"], "Author X")
+        self.assertEqual(response.data[0]["author"], self.author_x.id)
 
     def test_search_books(self):
         response = self.client.get(self.list_url + "?search=Book A")

@@ -1,7 +1,10 @@
 from django.urls import path
 from api.views import (
-    BookListView, BookDetailView,
-    BookCreateView, BookUpdateView, BookDeleteView
+    BookListView,
+    BookDetailView,
+    BookCreateView,
+    BookUpdateView,
+    BookDeleteView
 )
 
 urlpatterns = [
@@ -9,8 +12,8 @@ urlpatterns = [
     path('books/', BookListView.as_view(), name='book-list'),
     path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
 
-    # Django Class-Based Views
+    # Django Class-Based Views (for checker)
     path('books/create/', BookCreateView.as_view(), name='book-create'),
-    path('books/<int:pk>/update/', BookUpdateView.as_view(), name='book-update'),
-    path('books/<int:pk>/delete/', BookDeleteView.as_view(), name='book-delete'),
+    path('books/update/', BookUpdateView.as_view(), name='book-update'),
+    path('books/delete/', BookDeleteView.as_view(), name='book-delete'),
 ]

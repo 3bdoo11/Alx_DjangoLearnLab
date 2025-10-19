@@ -9,8 +9,7 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
-
-    tags = TaggableManager()  # <-- add tagging support
+    published_date = models.DateTimeField(null=True, blank=True)  # <-- added field
 
     def __str__(self):
         return self.title

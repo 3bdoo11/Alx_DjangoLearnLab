@@ -3,8 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.views import View
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 
@@ -28,12 +27,16 @@ def profile(request):
 # -------------------------
 # Blog Post CRUD (CBVs)
 # -------------------------
-
 class PostListView(ListView):
     model = Post
     template_name = 'blog/home.html'
     context_object_name = 'posts'
     ordering = ['-created_at']
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = 'blog/post_detail.html'
+    context_object_name = 'post'
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -63,34 +66,41 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == post.author
 
 # -------------------------
-# Post Detail + Comments
+# Comment CRUD (CBVs)
 # -------------------------
-class PostDetailView(View):
-    def get(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
-        comments = post.comments.all().order_by('-created_at')
-        form = CommentForm()
-        return render(request, 'blog/post_detail.html', {
-            'post': post,
-            'comments': comments,
-            'form': form
-        })
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
 
-    def post(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
-        if not request.user.is_authenticated:
-            return redirect('login')
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            return redirect('post_detail', pk=pk)
-        comments = post.comments.all().order_by('-created_at')
-        return render(request, 'blog/post_detail.html', {
-            'post': post,
-            'comments': comments,
-            'form': form
-        })
-# Note: The PostUpdateView has been added to the URL patterns in urls.py to enable updating blog posts.
+    def form_valid(self, form):
+        post_id = self.kwargs.get('post_pk')
+        form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=post_id)
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()

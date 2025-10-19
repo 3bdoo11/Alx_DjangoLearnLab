@@ -1,9 +1,10 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
+
+def home(request):
+    return render(request, 'blog/home.html')
+
 
 def register(request):
     if request.method == 'POST':

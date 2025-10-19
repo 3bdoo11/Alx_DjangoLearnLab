@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 def home(request):
     return render(request, 'blog/home.html')
 
-
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -15,7 +14,6 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'blog/register.html', {'form': form})
-
 
 @login_required
 def profile(request):

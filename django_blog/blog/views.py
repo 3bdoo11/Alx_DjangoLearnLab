@@ -1,11 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post
-from .forms import PostForm
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views import View
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 
 # -------------------------
 # User registration & profile (FBVs)
@@ -24,26 +25,16 @@ def register(request):
 def profile(request):
     return render(request, 'blog/profile.html')
 
-
 # -------------------------
 # Blog Post CRUD (CBVs)
 # -------------------------
 
-# List all posts (Home)
 class PostListView(ListView):
     model = Post
     template_name = 'blog/home.html'
     context_object_name = 'posts'
     ordering = ['-created_at']
 
-
-# View a single post
-class PostDetailView(DetailView):
-    model = Post
-    template_name = 'blog/post_detail.html'
-
-
-# Create a new post
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     template_name = 'blog/post_form.html'
@@ -53,8 +44,6 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-
-# Update an existing post
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     template_name = 'blog/post_form.html'
@@ -64,8 +53,6 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         post = self.get_object()
         return self.request.user == post.author
 
-
-# Delete a post
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
@@ -74,3 +61,36 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+# -------------------------
+# Post Detail + Comments
+# -------------------------
+class PostDetailView(View):
+    def get(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        comments = post.comments.all().order_by('-created_at')
+        form = CommentForm()
+        return render(request, 'blog/post_detail.html', {
+            'post': post,
+            'comments': comments,
+            'form': form
+        })
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        if not request.user.is_authenticated:
+            return redirect('login')
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            return redirect('post_detail', pk=pk)
+        comments = post.comments.all().order_by('-created_at')
+        return render(request, 'blog/post_detail.html', {
+            'post': post,
+            'comments': comments,
+            'form': form
+        })
+# Note: The PostUpdateView has been added to the URL patterns in urls.py to enable updating blog posts.

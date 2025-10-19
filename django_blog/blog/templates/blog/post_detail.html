@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ post.title }}</title>
+    <link rel="stylesheet" href="{% static 'blog/style.css' %}">
+</head>
+<body>
+    <h1>{{ post.title }}</h1>
+    <p>By {{ post.author.username }} | {{ post.created_at }}</p>
+    <p>{{ post.content }}</p>
+
+    {% if user == post.author %}
+        <a href="{% url 'post_update' post.pk %}">Edit</a>
+        <a href="{% url 'post_delete' post.pk %}">Delete</a>
+    {% endif %}
+
+    <hr>
+    <h2>Comments</h2>
+    {% for comment in comments %}
+        <div class="comment">
+            <p><strong>{{ comment.author.username }}:</strong> {{ comment.content }}</p>
+            <small>{{ comment.created_at }}</small>
+        </div>
+    {% empty %}
+        <p>No comments yet.</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+        <h3>Add a comment</h3>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Post Comment</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Log in</a> to comment.</p>
+    {% endif %}
+
+    <p><a href="{% url 'home' %}">Back to home</a></p>
+</body>
+</html>

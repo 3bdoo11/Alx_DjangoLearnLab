@@ -120,5 +120,8 @@ REST_FRAMEWORK = {
 }
 
 # Login / Logout redirects
-LOGIN_REDIRECT_URL = 'profile'
-LOGOUT_REDIRECT_URL = 'login'
+LOGIN_URL = 'login' 
+LOGIN_REDIRECT_URL = 'profile'  
+LOGOUT_REDIRECT_URL = 'login'  
+
+
